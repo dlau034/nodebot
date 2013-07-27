@@ -12,8 +12,12 @@ board.on("ready", function() {
     , greenLight = new five.Led('O2')
     , redLight = new five.Led('O3')
     , ACTIONS = ['touch', 'slide', 'tilt' ]
+    , timeout = 3000
+    , count = 0
+    , score = 0
+    , level = 1
+    , timer = null
     , expected = null
-    , timeout = null
   ;
 
   var play = function() {
@@ -24,17 +28,16 @@ board.on("ready", function() {
     var randomIndex = Math.floor(Math.random() * ACTIONS.length);
     expected = ACTIONS[randomIndex];
 
-    console.log('Engage with: %s', expected);
+    console.log('%s\n', expected.toUpperCase());
 
     slide.on('change', handleInput);
     touch.on('up', handleInput);
     tilt.on('change', handleInput);
-
-    timeout = setTimeout(end, 5000);
+    timer = setTimeout(handleTimeout, timeout);
   }
 
   var handleTimeout = function() {
-    clearTimeout(timeout);
+    clearTimeout(timer);
     console.log('Times up!');
     end();
   }
@@ -45,10 +48,10 @@ board.on("ready", function() {
   }
 
   var handleInput = function() {
-    clearTimeout(timeout);
+    clearTimeout(timer);
 
 
-    if (this === tilt) {
+    if (this === tilt ) {
       if (currentTilt === null || this.value > 900) {
         currentTilt = this.value;
         return;
@@ -71,11 +74,23 @@ board.on("ready", function() {
     if (success) {
       greenLight.on();
       redLight.off();
-      setTimeout(play, 500);
+      count += 1;
+      score += 1;
+      console.log('Level: %s, CURRENT SCORE: %s\n', level, score);
+      if (count === 5) {
+        timeout *= .9;
+        level += 1;
+        count = 0;
+        console.log('\nYou have advanced to the next level, timeout is now %s.\nGet ready ...\n', timeout);
+        setTimeout(play, 1000);
+      } else {
+        setTimeout(play, 1000);  
+      }
     } else {
       greenLight.off();
       redLight.on();  
-      setTimeout(end, 500);
+      console.log('WHOOPS. You hit: ', action);
+      end();
     }
 
   };
