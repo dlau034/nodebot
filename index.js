@@ -1,47 +1,25 @@
-// var five = require("johnny-five"),
-// 	board = new five.Board();
-
-// board.on("ready", function(){
-
-// 	var LedR = new five.Led(9)
-// 	var LedG = new five.Led(10)
-// 	var LedB = new five.Led(11)
-	
-// 	var leds = new five.Leds();
-
-// 	this.repl.inject({
-// 		leds: leds
-// 	})
-
-// });	
+var five = require("johnny-five")
+  , board = new five.Board()
+;
 
 
+board.on("ready", function() {
 
+  var sensor = new five.Sensor("I0")
+    , blink = new five.Led("O0")
+    , touch = new five.Button('O1')
+  ;
 
-var five = require("johnny-five");
+  blink.state = true;
 
-new five.Board().on("ready", function() {
-
-var sensor = new five.Sensor("I0")
-
-console.log(sensor);
-
-var blink = new five.Led("O0");
-
-  sensor.scale(0, 255).on("read", function() {
-	   		   
-      var val = Math.round(this.value)
-      console.log(val);
-
-      blink.brightness(val);
-      
+  sensor.scale(0, 255).on("read", function() {   		   
+    var val = Math.round(this.value);
+    if (blink.state === true) blink.brightness(val);
   });
+
+  touch.on('up', function() {
+    (blink.state === true) ? blink.off() : blink.on(); 
+    blink.state = !blink.state;
+  });
+
 });
-
-
-// var five = require("johnny-five");
-
-// new five.Board().on("ready", function() {
-//   new five.Led("O0").strobe(250);
-// });
-
