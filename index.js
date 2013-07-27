@@ -12,7 +12,6 @@ board.on("ready", function() {
     , bigLight = new five.Led("O0")
     , greenLight = new five.Led('O2')
     , redLight = new five.Led('O3')
-    // , yellowLight = new five.Led('04')
   ;
 
   bigLight.state = true;
